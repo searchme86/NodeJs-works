@@ -1,0 +1,4 @@
+{
+  "ignore": ["src/backups/*"],
+  "exec": "babel-node src/index.js"
+}
