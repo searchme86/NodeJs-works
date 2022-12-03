@@ -1,6 +1,8 @@
 import express from 'express';
+import TaskRouter from './routes/TaskRouter';
 const app = express();
 
+// middleware
 // apply static files
 app.use(express.static('./public'));
 //parse form data
@@ -9,7 +11,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Router
+app.use('/api/v1/tasks', TaskRouter);
 
-app.listen(5001, () => {
-  console.log('server is listening on port 5001');
+// init
+const port = 3001;
+
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
 });
