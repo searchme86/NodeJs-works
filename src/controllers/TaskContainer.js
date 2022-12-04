@@ -12,6 +12,7 @@ export const createTask = async (req, res) => {
 export const getAllTask = async (req, res) => {
   try {
     const tasks = await Task.find({});
+    // return res.status(200).json({ tasks });
     return res.status(200).json({ tasks });
   } catch (error) {
     return res.status(500).json({ msg: error });
