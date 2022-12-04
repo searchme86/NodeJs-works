@@ -9,16 +9,26 @@ export const createTask = async (req, res) => {
   }
 };
 
-export const getAllTask = (req, res) => {
+export const getAllTask = async (req, res) => {
   try {
-    return res.send('all items from the file');
-  } catch (error) {}
+    const tasks = await Task.find({});
+    return res.status(200).json({ tasks });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
 };
 
-export const getTask = (req, res) => {
+export const getTask = async (req, res) => {
   try {
-    return res.json({ id: req.params.id });
-  } catch (error) {}
+    const { id: taskID } = req.params;
+    const task = await Task.findOne({ _id: taskID });
+    if (!task) {
+      return res.status(404).json({ msg: `No task with ID: ${taskID}` });
+    }
+    return res.json({ task });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
 };
 
 export const getSingleTask = (req, res) => {
@@ -27,14 +37,31 @@ export const getSingleTask = (req, res) => {
   } catch (error) {}
 };
 
-export const updateTask = (req, res) => {
+export const updateTask = async (req, res) => {
   try {
-    return res.send('update task');
-  } catch (error) {}
+    const { id: taskID } = req.params;
+    const task = await Task.findByIdAndUpdate({ _id: taskID }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!task) {
+      return res.status(404).json({ msg: `No task with ID: ${taskID}` });
+    }
+    return res.status(200).json({ task });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
 };
 
-export const deleteTask = (req, res) => {
+export const deleteTask = async (req, res) => {
   try {
-    return res.send('delete task');
-  } catch (error) {}
+    const { id: taskID } = req.params;
+    const task = await Task.findOneAndDelete({ _id: taskID });
+    if (!task) {
+      return res.status(400).json({ msg: `No task with Id:${taskID}` });
+    }
+    return res.status(200).json({ task });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
 };
