@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+// 여기서 부터
+// import Store from './models/Store';
+// import jsonProducts from './data/products.json';
+// 여기까지 삭제
 
 export const connectToDB = (cb) => {
   try {
@@ -6,6 +10,10 @@ export const connectToDB = (cb) => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    // 여기부터
+    // Store.deleteMany();
+    // Store.create(jsonProducts);
+    // 여기까지 삭제
     cb();
     console.log('Db connect successful');
   } catch (error) {
