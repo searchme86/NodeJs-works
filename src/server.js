@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import expressAsyncErrors from 'express-async-errors';
 import { notFound } from './middleware/notFound';
 import { ErrorHandlerMiddleware } from './middleware/errorHandler';
@@ -29,11 +30,11 @@ app.use(
 );
 app.use(helmet());
 app.use(cors());
-app.use(rateLimit);
 app.use(xss());
 
 // apply static files
-app.use(express.static('./public'));
+// app.use(express.static('./public'));
+app.use(express.static(path.resolve(__dirname, '../client/build')));
 //parse form data
 app.use(express.urlencoded({ extended: false }));
 //parse json
@@ -43,8 +44,12 @@ app.use(express.json());
 // app.use('/api/v1/tasks', TaskRouter);
 // app.use('/api/v1/products', StoreRouter);
 // app.use('/api/v1', JWTRouter);
-app.use('/api/v1/jobs', JobRouter);
-app.use('/api/v1/auth', Auth, JobAuthRouter);
+app.use('/api/v1/auth', JobAuthRouter);
+app.use('/api/v1/jobs', Auth, JobRouter);
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+});
 
 // Error Handler
 app.use(notFound);

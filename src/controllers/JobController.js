@@ -1,34 +1,72 @@
 import User from '../models/User';
 import Job from '../models/Job';
 import StatusCode from 'http-status-codes';
-import { BadRequest } from '../utils/bad-request';
-import { UnauthenticatedError } from '../utils/unauthenticated';
+// import { BadRequest } from '../src/utils/bad-request';
+// import { UnauthenticatedError } from '../src/utils/unauthenticated';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { UnauthenticatedError } from '../utils/unauthenticated';
+import { BadRequest } from '../utils/bad-request';
 
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
   const token = user.createJWT();
-  return res
-    .status(StatusCode.CREATED)
-    .json({ user: { name: user.name }, token });
+  return res.status(StatusCode.CREATED).json({
+    user: {
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+      name: user.name,
+      token,
+    },
+  });
 };
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
   if (!user) {
     throw new UnauthenticatedError('invalid credentials');
   }
-
   const isPasswordCorrect = await user.comparePassword(password);
-
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('invalid credentials');
   }
   const token = user.createJWT();
-  return res.status(StatusCode.OK).json({ user: { name: user.name }, token });
+  return res.status(StatusCode.OK).json({
+    user: {
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+      name: user.name,
+      token,
+    },
+  });
+};
+
+export const updateUser = async (req, res) => {
+  const { email, name, lastName, location } = req.body;
+  if (!email || !name || !lastName || !location) {
+    throw new BadRequest('Please provide all values');
+  }
+  const user = await User.findOne({ _id: req.user.userId });
+
+  user.email = email;
+  user.name = name;
+  user.lastName = lastName;
+  user.location = location;
+
+  await user.save();
+  const token = user.createJWT();
+  res.status(StatusCode.OK).json({
+    user: {
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+      name: user.name,
+      token,
+    },
+  });
 };
 
 export const getAllJobs = async (req, res) => {

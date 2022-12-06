@@ -1,11 +1,14 @@
 import jwt from 'jsonwebtoken';
-// import { CustomAPIError } from '../utils/CustomError';
 import { UnauthenticatedError } from '../utils/unauthenticated';
+// import { CustomAPIError } from '../utils/CustomError';
+// import { UnauthenticatedError } from '../src/utils/unauthenticated';
 
 export const Auth = async (req, res, next) => {
   // check header
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer')) {
+
+  console.log('authHeader', authHeader);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new UnauthenticatedError('Authentication invalid');
   }
   const token = authHeader.split(' ')[1];
