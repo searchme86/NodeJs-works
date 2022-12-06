@@ -2,22 +2,20 @@ import jwt from 'jsonwebtoken';
 // import { CustomAPIError } from '../utils/CustomError';
 import { UnauthenticatedError } from '../utils/unauthenticated';
 
-export const authentication = async (req, res, next) => {
+export const Auth = async (req, res, next) => {
+  // check header
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new UnauthenticatedError('No token is provided ', 401);
+  if (!authHeader || !authHeader.startsWith('Bearer')) {
+    throw new UnauthenticatedError('Authentication invalid');
   }
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('decoded', decoded);
-    const { id, username } = decoded;
-    req.user = { id, username };
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // attach the user to the job routes
+    req.user = { userId: payload.userId, name: payload.name };
     next();
   } catch (error) {
-    throw new UnauthenticatedError('Not authorized to access this route', 401);
+    throw new UnauthenticatedError('Authentication invalid');
   }
-
-  next();
 };
